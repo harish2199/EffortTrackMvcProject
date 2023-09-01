@@ -1,0 +1,195 @@
+﻿@model Common.Models.User
+
+<div class="modal fade" id="updateModal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="updateModalLabel" aria-hidden="true" style="backdrop-filter: blur(5px);">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="updateModalLabel">Update User</h5>
+                <button type="button" class="btn-close" id="closeModalBtn" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="updateUserForm" action="/admin/UserAction" method="post">
+                    <div class="container">
+                        <div class="row gx-3">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <select id="userDropdown" class="form-select form-select-sm" name="UserId" aria-label="users">
+                                        <option selected>Select User</option>
+                                        @if (ViewBag.Users != null)
+                                        {
+                                            foreach (var item in ViewBag.Users)
+                                            {
+                                                <option value="@item.UserId"
+                                                        data-username="@item.UserName"
+                                                        data-designation="@item.Designation"
+                                                        data-useremail="@item.UserEmail"
+                                                        data-password="@item.HashedPassword"
+                                                        data-saltvalue="@item.SaltValue">
+
+                                                    @item.UserName
+                                                </option>
+                                            }
+                                        }
+                                    </select>
+                                    @Html.ValidationMessageFor(model => model.UserId, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <input type="text" id="username" class="form-control form-control-sm" name="UserName" placeholder="User Name">
+                                    @Html.ValidationMessageFor(model => model.UserName, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <input type="text" id="designation" class="form-control form-control-sm" name="Designation" placeholder="Designation">
+                                    @Html.ValidationMessageFor(model => model.Designation, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <input type="text" id="email" class="form-control form-control-sm" name="UserEmail" placeholder="User Email">
+                                    @Html.ValidationMessageFor(model => model.UserEmail, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <input type="hidden" class="form-control form-control-sm" name="HashedPassword">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <input type="hidden" class="form-control form-control-sm" name="SaltValue">
+                                    <input type="hidden" name="ConfirmPassword" />
+                                </div>
+                            </div>
+                            <input type="hidden" name="Role" value="User">
+
+                            <div class="col-md-12">
+                                <div class="row justify-content-end">
+                                    <div class="col-md-2">
+                                        <div class="d-grid">
+                                            <a href="#" class="btn btn-sm btn-primary" id="closeModalBtnDiscard" onclick="resetForm('updateUserForm')" data-bs-dismiss="modal" aria-label="Close">Discard</a>
+                                        </div>
+                                    </div>
+                                    <input type="hidden" name="Role" value="User">
+                                    <div class="col-md-2">
+                                        <div class="d-grid">
+                                            <button type="submit" class="btn btn-sm btn-secondary" name="action" value="update">Update</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/Scripts/jquery-3.4.1.min.js"></script>
+<script src="~/Scripts/jquery.validate.min.js"></script>
+<script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+
+<script>
+    $("#userDropdown").on("change", function () {
+        var selectedOption = $(this).find("option:selected");
+
+        if (selectedOption.val() !== "Select User") {
+            var username = selectedOption.data("username");
+            var designation = selectedOption.data("designation");
+            var useremail = selectedOption.data("useremail");
+            var password = selectedOption.data("password");
+            var saltValue = selectedOption.data("saltvalue"); // Corrected attribute name here
+
+            $("input[name='UserName']").val(username);
+            $("input[name='Designation']").val(designation);
+            $("input[name='UserEmail']").val(useremail);
+            $("input[name='HashedPassword']").val(password);
+            $("input[name='SaltValue']").val(saltValue);
+            $("input[name='ConfirmPassword']").val(password);
+
+        } else {
+            // Clear the form fields if no user is selected
+            resetFormFields();
+        }
+    });
+
+
+    function resetForm(formId) {
+        resetFormFields();
+        $("#" + formId)[0].reset(); // Reset the form using native reset method
+    }
+
+    function resetFormFields() {
+        $("input[name='UserName']").val("");
+        $("input[name='Designation']").val("");
+        $("input[name='UserEmail']").val("");
+        $("input[name='HashedPassword']").val("");
+        $("input[name='SaltValue']").val("");
+
+        $("#userDropdown").val("Select User"); // Reset dropdown to default option
+    }
+</script>
+
+
+<script>
+    $(document).ready(function () {
+        $("#updateUserForm").on("submit", function (e) {
+            var selectedOption = $('#userDropdown').find("option:selected");
+            var userNameField = $("#username"); 
+            var designationField = $("#designation"); 
+            var emailField = $("#email"); 
+
+            // Check if a user is selected
+            if (selectedOption.val() === "Select User") {
+                e.preventDefault(); 
+                $("select[name='UserId']").siblings(".text-danger").text("User is required.");
+            } else {
+                $("select[name='UserId']").siblings(".text-danger").text("");
+            }
+
+            // Check user Name
+            if (userNameField.val() === "") {
+                e.preventDefault();
+                userNameField.siblings(".text-danger").text("User Name is required.");
+            } else {
+                userNameField.siblings(".text-danger").text("");
+            }
+            // Check Designation
+            if (designationField.val() === "") {
+                e.preventDefault();
+                designationField.siblings(".text-danger").text("Designation is required.");
+            } else {
+                designationField.siblings(".text-danger").text(""); 
+            }
+
+            // Check email
+            if (emailField.val() === "") {
+                e.preventDefault();
+                emailField.siblings(".text-danger").text("Email is required.");
+            } else {
+                emailField.siblings(".text-danger").text(""); 
+            }
+        });
+
+        // Add an event listener to the user dropdown to clear the error message when a user is selected.
+        $('#userDropdown').on('change', function () {
+            var selectedOption = $(this).find("option:selected");
+            if (selectedOption.val() !== "Select User") {
+                $("select[name='UserId']").siblings(".text-danger").text("");
+            }
+        });
+
+        function clearValidationMessages() {
+            $(".text-danger").text("");
+        }
+
+        //clearing validation messages when i close model
+        $("#closeModalBtn, #closeModalBtnDiscard").on("click", function () {
+            clearValidationMessages();
+        });
+    });
+</script>
+

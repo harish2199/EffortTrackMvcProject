@@ -1,0 +1,53 @@
+﻿@model Common.Models.Effort
+
+<div class="modal fade" id="approveEffortsModal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="approveEffortsModalLabel" aria-hidden="true" style="backdrop-filter: blur(5px);">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="approveEffortsModalLabel">Approve Efforts</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                @if (ViewBag.EffortsToApprove != null && ViewBag.EffortsToApprove.Count > 0)
+                {
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>User Name</th>
+                                <th>Date</th>
+                                <th>Project</th>
+                                <th>Task</th>
+                                <th>Shift</th>
+                                <th>Hours Worked</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var effort in ViewBag.EffortsToApprove)
+                            {
+                                <tr>
+                                    <td>@effort.AssignTask.User.UserName</td>
+                                    <td>@effort.SubmittedDate.ToString("yyyy-MM-dd")</td>
+                                    <td>@effort.AssignTask.Project.ProjectName</td>
+                                    <td>@effort.AssignTask.Task.TaskName</td>
+                                    <td>@effort.Shift.ShiftName</td>
+                                    <td>@effort.HoursWorked</td>
+                                    <td>
+                                        <form action="/admin/ApproveEffort?effortid=@effort.EffortId" method="post">
+                                            <button type="submit" class="btn btn-success">Approve</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+                else
+                {
+                    <p><strong>No Efforts available to Approve.</strong></p>
+                }
+
+            </div>
+        </div>
+    </div>
+</div>

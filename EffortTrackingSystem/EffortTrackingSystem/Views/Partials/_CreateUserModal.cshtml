@@ -1,0 +1,193 @@
+﻿@model Common.Models.User
+
+<div class="modal fade" id="createModal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="createModalLabel" aria-hidden="true" style="backdrop-filter:blur(5px);">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createModalLabel">Create User</h5>
+                <button type="button" class="btn-close" id="closeModalBtn" data-bs-dismiss="modal" onclick="resetForm('userForm')" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="userForm" action="/admin/UserAction" method="post">
+                    <div class="container">
+                        <div class="row gx-3">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <input type="text" id="username" class="form-control form-control-sm" name="UserName" placeholder="User Name">
+                                    @Html.ValidationMessageFor(model => model.UserName, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <input type="text" id="designation" class="form-control form-control-sm" name="Designation" placeholder="Designation">
+                                    @Html.ValidationMessageFor(model => model.Designation, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <input type="text" id="email" class="form-control form-control-sm" name="UserEmail" placeholder="User Email">
+                                    @Html.ValidationMessageFor(model => model.UserEmail, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <input type="text" class="form-control form-control-sm" id="password" name="HashedPassword" placeholder="Password">
+                                    @Html.ValidationMessageFor(model => model.HashedPassword, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <input type="text" class="form-control form-control-sm" id="confirmPassword" name="ConfirmPassword" placeholder="Confirm Password">
+                                    @Html.ValidationMessageFor(model => model.ConfirmPassword, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <input type="hidden" name="Role" value="User">
+                            <div class="col-md-12">
+                                <div class="row justify-content-end">
+                                    <div class="col-md-2">
+                                        <div class="d-grid">
+                                            <a href="#" class="btn btn-sm btn-primary" id="closeModalBtnDiscard" onclick="resetForm('userForm')" data-bs-dismiss="modal" aria-label="Close">Discard</a>
+                                        </div>
+                                    </div>
+                                    <input type="hidden" name="Role" value="User">
+                                    <div class="col-md-2">
+                                        <div class="d-grid">
+                                            <button type="submit" class="btn btn-sm btn-success" id="btncreate" name="action" value="create">Create</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="~/Scripts/jquery-3.4.1.min.js"></script>
+<script src="~/Scripts/jquery.validate.min.js"></script>
+<script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        $("#userForm input").on("keyup blur", function () {
+            validateField($(this));
+        });
+
+        //checking userName feild
+        function validateField(inputElement) {
+            var errorMessage = "";
+            var value = inputElement.val();
+
+            if (value === "") {
+                errorMessage = "This field is required.";
+            }
+
+            if (inputElement.attr("id") === "username") {
+                var userNameField = $("#username");
+                var userNameValue = userNameField.val();
+
+                if (userNameValue === "") {
+                    errorMessage = "This field is required.";
+                } else {
+                    if (!/^[a-zA-Z\s]+$/.test(userNameValue)) {
+                        errorMessage = "Please enter valid characters only.";
+                    }
+                }
+            }
+            //checking Designation feild
+            if (inputElement.attr("id") === "designation") {
+                var designationField = $("#designation");
+                var designationValue = designationField.val();
+
+                if (designationValue === "") {
+                    errorMessage = "This field is required.";
+                } else {
+                    if (!(/^[a-zA-Z\s]+$/.test(designationValue))) {
+                        errorMessage = "Please enter valid characters only.";
+                    }
+                }
+            }
+         @*   //checking Email feild
+            if (inputElement.attr("id") === "email") {
+                var emailField = $("#email");
+                var emailValue = emailField.val();
+                if (emailValue === "") {
+                    errorMessage = "This field is required.";
+                } else {
+                    var emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+                    if (!emailRegex.test(emailValue)) {
+                        errorMessage = "Please enter a valid email address.";
+                    }
+                }
+            }*@
+
+            //checking password feild length
+            if (inputElement.attr("id") === "password") {
+                var passwordField = $("#password");
+                var passwordValue = passwordField.val();
+                if (passwordValue === "") {
+                    errorMessage = "This field is required.";
+                } else if (passwordValue.length < 6) {
+                    errorMessage = "Password must be at least 6 characters long.";
+                }
+            }
+
+            //Passwords checking
+            if (inputElement.attr("id") === "password") {
+                var confirmPasswordField = $("#confirmPassword");
+                var confirmPasswordValue = confirmPasswordField.val();
+
+                if (confirmPasswordValue !== "" && confirmPasswordValue !== value) {
+                    errorMessage = "Passwords do not match.";
+                }
+            } else if (inputElement.attr("id") === "confirmPassword") {
+                var passwordField = $("#password");
+                var passwordValue = passwordField.val();
+                if (passwordValue !== "" && passwordValue !== value) {
+                    errorMessage = "Passwords do not match.";
+                }
+            }
+
+            displayErrorMessage(inputElement, errorMessage);
+        }
+
+        function displayErrorMessage(inputElement, errorMessage) {
+            inputElement.siblings(".text-danger").text(errorMessage);
+        }
+
+        function clearValidationMessages() {
+            $(".text-danger").text("");
+        }
+
+        //checking feilds when click on submit
+        $("#userForm").on("submit", function (e) {
+            clearValidationMessages();
+            var isValid = true;
+
+            $("#userForm input").each(function () {
+                var inputElement = $(this);
+                validateField(inputElement);
+
+                if (inputElement.siblings(".text-danger").text() !== "") {
+                    isValid = false;
+                }
+            });
+
+            if (!isValid) {
+                e.preventDefault();
+            }
+        });
+
+        //clearing validation messages when i close model
+        $("#closeModalBtn, #closeModalBtnDiscard").on("click", function () {
+            clearValidationMessages();
+        });
+    });
+</script>
+
+
+
+

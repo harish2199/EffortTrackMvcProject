@@ -1,0 +1,57 @@
+﻿@model Common.Models.ShiftChange
+
+<div class="modal fade" id="approveShiftChangesModal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="approveShiftChangesModalLabel" aria-hidden="true" style="backdrop-filter: blur(5px);">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="approveShiftChangesModalLabel">Approve Shift Changes</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                @if (ViewBag.PendingShiftChanges != null && ViewBag.PendingShiftChanges.Count > 0)
+                {
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>User</th>
+                                <th>Assigned Shift</th>
+                                <th>New Shift</th>
+                                <th>Date</th>
+                                <th>Reason</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                            @foreach (var shiftChange in ViewBag.PendingShiftChanges)
+                            {
+                                <tr>
+                                    <td>@shiftChange.User.UserName</td>
+                                    <td>
+                                        @shiftChange.AssignedShift.ShiftName<br />
+                                    </td>
+                                    <td>
+                                        @shiftChange.NewShift.ShiftName<br />
+                                    </td>
+                                    <td>@shiftChange.Date.ToString("yyyy-MM-dd")</td>
+                                    <td>@shiftChange.Reason</td>
+                                    <td>
+                                        <form action="/admin/ShiftChange?shiftChangeId=@shiftChange.ShiftChangeId" method="post">
+                                            <button type="submit" class="btn btn-success" name="action" value="Approved">Approve</button>
+                                            <button type="submit" class="btn btn-danger" name="action" value="Rejected">Reject</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+                else
+                {
+                    <p><strong>No Shift Changes available to Approve.</strong></p>
+                }
+
+            </div>
+        </div>
+    </div>
+</div>

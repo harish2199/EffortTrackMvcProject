@@ -1,0 +1,185 @@
+﻿@model Common.Models.AssignTask
+
+<div class="modal fade" id="assignModal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="assignModalLabel" aria-hidden="true" style="backdrop-filter: blur(5px);">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="assignModalLabel">Assign Task</h5>
+                <button type="button" class="btn-close" id="closeModalBtn" data-bs-dismiss="modal" onclick="resetForm('taskForm')" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="taskForm" action="/admin/TaskAction" method="post">
+                    <div class="container">
+                        <div class="row gx-3">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <select id="userid" class="form-select form-select-sm" name="UserId" aria-label="users">
+                                        <option selected>Select User</option>
+                                        @if (ViewBag.Users != null)
+                                        {
+                                            foreach (var item in ViewBag.Users)
+                                            {
+                                                <option value="@item.UserId">@item.UserName</option>
+                                            }
+                                        }
+                                    </select>
+                                    @Html.ValidationMessageFor(model => model.UserId, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <select id="projectid" class="form-select form-select-sm" name="ProjectId" aria-label="projects">
+                                        <option selected>Select Project</option>
+                                        @if (ViewBag.Projects != null)
+                                        {
+                                            foreach (var item in ViewBag.Projects)
+                                            {
+                                                <option value="@item.ProjectId">@item.ProjectName</option>
+                                            }
+                                        }
+                                    </select>
+                                    @Html.ValidationMessageFor(model => model.ProjectId, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <select id="taskid" class="form-select form-select-sm" name="TaskId" aria-label="tasks">
+                                        <option selected>Select task</option>
+                                        @if (ViewBag.Tasks != null)
+                                        {
+                                            foreach (var item in ViewBag.Tasks)
+                                            {
+                                                <option value="@item.TaskId">@item.TaskName</option>
+                                            }
+                                        }
+                                    </select>
+                                    @Html.ValidationMessageFor(model => model.TaskId, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <select id="shiftid" class="form-select form-select-sm" name="ShiftId" aria-label="shifts">
+                                        <option selected>Select shift</option>
+                                        @if (ViewBag.Shifts != null)
+                                        {
+                                            foreach (var item in ViewBag.Shifts)
+                                            {
+                                                <option value="@item.ShiftId">@item.StartTime-@item.EndTime</option>
+                                            }
+                                        }
+                                    </select>
+                                    @Html.ValidationMessageFor(model => model.ShiftId, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="date"><strong>Start Date:</strong></label>
+                                    <input type="date" id="startdate" class="form-control" name="StartDate">
+                                    @Html.ValidationMessageFor(model => model.StartDate, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="date"><strong>End Date:</strong></label>
+                                    <input type="date" id="enddate" class="form-control" name="EndDate">
+                                    @Html.ValidationMessageFor(model => model.EndDate, "", new { @class = "text-danger" })
+
+                                    <input type="hidden" name="Status" value="Pending">
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="row justify-content-end">
+                                    <div class="col-md-2">
+                                        <div class="d-grid">
+                                            <a href="#" class="btn btn-sm btn-primary" id="closeModalBtnDiscard" onclick="resetForm('taskForm')" data-bs-dismiss="modal" aria-label="Close">Discard</a>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="d-grid">
+                                            <button type="submit" class="btn btn-sm btn-success" name="action" value="assign">Assign</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/Scripts/jquery-3.4.1.min.js"></script>
+<script src="~/Scripts/jquery.validate.min.js"></script>
+<script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        $("#taskForm").on("submit", function (e) {
+            var errorMessages = {};
+
+            // Check user selection
+            var selectedUser = $('#userid').val();
+            if (selectedUser === "Select User") {
+                errorMessages['UserId'] = "User is required.";
+            }
+
+            // Check project selection
+            var selectedProject = $('#projectid').val();
+            if (selectedProject === "Select Project") {
+                errorMessages['ProjectId'] = "Project is required.";
+            }
+
+            // Check task selection
+            var selectedTask = $('#taskid').val();
+            if (selectedTask === "Select task") {
+                errorMessages['TaskId'] = "Task is required.";
+            }
+
+            // Check shift selection
+            var selectedShift = $('#shiftid').val();
+            if (selectedShift === "Select shift") {
+                errorMessages['ShiftId'] = "Shift is required.";
+            }
+
+            // Check start date
+            var startDate = $('#startdate').val();
+            if (startDate === "") {
+                errorMessages['StartDate'] = "Start date is required.";
+            }
+
+            // Check end date
+            var endDate = $('#enddate').val();
+            if (endDate === "") {
+                errorMessages['EndDate'] = "End date is required.";
+            }
+
+            // Display error messages
+            $.each(errorMessages, function (field, message) {
+                $("select[name='" + field + "'], input[name='" + field + "']").siblings(".text-danger").text(message);
+            });
+
+            // Prevent form submission if there are errors
+            if ($.isEmptyObject(errorMessages)) {
+                // Form is valid, continue with submission
+            } else {
+                e.preventDefault();
+            }
+        });
+
+        // Add event listeners to clear error messages when options are selected or dates are changed
+        $('#userid, #projectid, #taskid, #shiftid, #startdate, #enddate').on('change', function () {
+            var fieldName = $(this).attr('name');
+            $("select[name='" + fieldName + "'], input[name='" + fieldName + "']").siblings(".text-danger").text("");
+        });
+
+        function clearValidationMessages() {
+            $(".text-danger").text("");
+        }
+
+        //clearing validation messages when i close model
+        $("#closeModalBtn, #closeModalBtnDiscard").on("click", function () {
+            clearValidationMessages();
+        });
+    });
+</script>

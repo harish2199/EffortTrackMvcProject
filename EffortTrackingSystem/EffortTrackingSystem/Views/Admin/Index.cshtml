@@ -1,0 +1,144 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@if (ViewBag.Message != null)
+{
+    <div class="alert alert-info alert-dismissible fade show" role="alert">
+        <strong>Information: </strong> @ViewBag.Message
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="close">
+        </button>
+    </div>
+}
+@if (ViewBag.LoggedIn != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @ViewBag.LoggedIn
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="close">
+        </button>
+    </div>
+}
+
+<div class="container1 mt-5">
+    <div class="row text-center">
+        <div class="col-md-4 mb-4">
+            <a href="#" class="text-decoration-none text-reset" data-bs-toggle="modal" data-bs-target="#createModal">
+                <div class="card card-hover h-100">
+                    <div class="card-body">
+                        <p class="card-text">Create User</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-4 mb-4">
+            <a href="#" class="text-decoration-none text-reset" data-bs-toggle="modal" data-bs-target="#updateModal">
+                <div class="card card-hover h-100">
+                    <div class="card-body">
+                        <p class="card-text">Update User</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-4 mb-4">
+            <a href="#" class="text-decoration-none text-reset" data-bs-toggle="modal" data-bs-target="#assignModal">
+                <div class="card card-hover h-100">
+                    <div class="card-body">
+                        <p class="card-text">Assign Task</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-4 mb-4">
+            <a href="#" class="text-decoration-none text-reset" data-bs-toggle="modal" data-bs-target="#updateTaskModal">
+                <div class="card card-hover h-100">
+                    <div class="card-body">
+                        <p class="card-text">Update Task</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-4 mb-4">
+            <a href="#" class="text-decoration-none text-reset" data-bs-toggle="modal" data-bs-target="#approveEffortsModal">
+                <div class="card card-hover h-100">
+                    <div class="card-body">
+                        <p class="card-text">Approve Efforts</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-4 mb-4">
+            <a href="#" class="text-decoration-none text-reset" data-bs-toggle="modal" data-bs-target="#approveTimeOffsModal">
+                <div class="card card-hover h-100">
+                    <div class="card-body">
+                        <p class="card-text">Approve Time Offs</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-4 mb-4">
+            <a href="#" class="text-decoration-none text-reset" data-bs-toggle="modal" data-bs-target="#approveShiftChangesModal">
+                <div class="card card-hover h-100">
+                    <div class="card-body">
+                        <p class="card-text">Approve Shift Changes</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+</div>
+
+@* Modal for Create*@
+@Html.Partial("~/Views/Partials/_CreateUserModal.cshtml")
+
+@* Modal for Update*@
+@Html.Partial("~/Views/Partials/_UpdateUserModal.cshtml")
+
+@* Modal for Assign Project, Task, and Shifts*@
+@Html.Partial("~/Views/Partials/_AssignTaskModal.cshtml")
+
+@*Modal for Updating Project, Task and Shifts*@
+@Html.Partial("~/Views/Partials/_UpdateTaskModal.cshtml")
+
+@* Modal for Approve Efforts*@
+@Html.Partial("~/Views/Partials/_ApproveEffortsModal.cshtml")
+
+@* Modal for Approve Time Offs*@
+@Html.Partial("~/Views/Partials/_ApproveTimeOffsModal.cshtml")
+
+@*Modal for Approve Shift Changes*@
+@Html.Partial("~/Views/Partials/_ApproveShiftChangeModal.cshtml")
+
+
+
+
+<style>
+    .container1 {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 80vh;
+    }
+
+    .card-hover {
+        transition: transform 0.2s;
+    }
+
+        .card-hover:hover {
+            transform: scale(1.05);
+            cursor: pointer;
+        }
+
+    .modal-backdrop {
+        --bs-backdrop-bg: #00000026;
+    }
+</style>
+
+<script>
+    window.setTimeout(function () {
+        $(".alert").fadeTo(500, 0).slideUp(500, function () {
+            $(this).remove();
+        });
+    }, 5000);
+
+</script>
