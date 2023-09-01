@@ -133,58 +133,74 @@
     }
 </script>
 
-
 <script>
     $(document).ready(function () {
-        $("#updateUserForm").on("submit", function (e) {
-            var selectedOption = $('#userDropdown').find("option:selected");
-            var userNameField = $("#username"); 
-            var designationField = $("#designation"); 
-            var emailField = $("#email"); 
-
-            // Check if a user is selected
-            if (selectedOption.val() === "Select User") {
-                e.preventDefault(); 
-                $("select[name='UserId']").siblings(".text-danger").text("User is required.");
-            } else {
-                $("select[name='UserId']").siblings(".text-danger").text("");
-            }
-
-            // Check user Name
-            if (userNameField.val() === "") {
-                e.preventDefault();
-                userNameField.siblings(".text-danger").text("User Name is required.");
-            } else {
-                userNameField.siblings(".text-danger").text("");
-            }
-            // Check Designation
-            if (designationField.val() === "") {
-                e.preventDefault();
-                designationField.siblings(".text-danger").text("Designation is required.");
-            } else {
-                designationField.siblings(".text-danger").text(""); 
-            }
-
-            // Check email
-            if (emailField.val() === "") {
-                e.preventDefault();
-                emailField.siblings(".text-danger").text("Email is required.");
-            } else {
-                emailField.siblings(".text-danger").text(""); 
-            }
+        $("#updateUserForm input").on("keyup blur", function () {
+            validateField($(this));
         });
 
-        // Add an event listener to the user dropdown to clear the error message when a user is selected.
-        $('#userDropdown').on('change', function () {
-            var selectedOption = $(this).find("option:selected");
-            if (selectedOption.val() !== "Select User") {
-                $("select[name='UserId']").siblings(".text-danger").text("");
+        //checking feilds
+        function validateField(inputElement) {
+            var errorMessage = "";
+            var value = inputElement.val();
+
+            if (value === "") {
+                errorMessage = "This field is required.";
             }
-        });
+
+            displayErrorMessage(inputElement, errorMessage);
+        }
+
+        function displayErrorMessage(inputElement, errorMessage) {
+            inputElement.siblings(".text-danger").text(errorMessage);
+        }
 
         function clearValidationMessages() {
             $(".text-danger").text("");
         }
+
+        // Event listener for user dropdown change
+        $("#userDropdown").on("change", function () {
+            var selectedOption = $(this).find("option:selected");
+            if (selectedOption.val() === "Select User") {
+                $("select[name='UserId']").siblings(".text-danger").text("User is required.");
+            } else {
+                $("select[name='UserId']").siblings(".text-danger").text("");
+                // Clear error messages for other fields
+                $("#updateUserForm input").each(function () {
+                    $(this).siblings(".text-danger").text("");
+                });
+            }
+        });
+
+        //checking feilds when click on submit
+        $("#updateUserForm").on("submit", function (e) {
+            clearValidationMessages();
+            var isValid = true;
+
+            var selectedOption = $('#userDropdown').find("option:selected");
+            // Check if a user is selected
+            if (selectedOption.val() === "Select User") {
+                e.preventDefault();
+                $("select[name='UserId']").siblings(".text-danger").text("User is required.");
+            } else {
+                $("select[name='UserId']").siblings(".text-danger").text("");
+            }
+                
+
+            $("#updateUserForm input").each(function () {
+                var inputElement = $(this);
+                validateField(inputElement);
+
+                if (inputElement.siblings(".text-danger").text() !== "") {
+                    isValid = false;
+                }
+            });
+
+            if (!isValid) {
+                e.preventDefault();
+            }
+        });
 
         //clearing validation messages when i close model
         $("#closeModalBtn, #closeModalBtnDiscard").on("click", function () {
@@ -192,4 +208,3 @@
         });
     });
 </script>
-
